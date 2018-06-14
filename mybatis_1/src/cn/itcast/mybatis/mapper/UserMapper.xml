@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.itcast.mybatis.mapper.UserMapper">
+
+
+	<sql id="query_user">
+ 		<if test="userCustom != null">
+ 			<if test="userCustom.sex != null and userCustom.sex !=''">
+	 				and user.sex=#{userCustom.sex}			
+ 			</if>
+ 		</if>
+ 		
+		<if test="userCustom != null">
+ 			<if test="userCustom.username != null and userCustom.username !=''">
+					AND user.username LIKE '%${userCustom.username}%'
+ 			</if>
+ 		</if>
+	
+	</sql>
+	
+	
+	<select id="findUserById" parameterType="int" resultType="cn.itcast.mybatis.po.User">
+		SELECT * FROM user WHERE id = #{id}
+	</select>
+	
+	
+	<select id="findUserByname" parameterType="java.lang.String" resultType="cn.itcast.mybatis.po.User">
+		SELECT * FROM user WHERE username LIKE '%${value}%'
+	</select>
+	
+	<insert id = "insertUser" parameterType="cn.itcast.mybatis.po.User">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into user (id, username, birthday, sex, address) value(#{id},#{username},#{birthday},#{sex},#{address})
+	</insert>
+	
+	
+	<delete id="deleteUser" parameterType="java.lang.Integer">
+		delete from user where id = #{id}
+	</delete>
+	
+	
+	<update id="updateUser" parameterType="cn.itcast.mybatis.po.User">
+		update user set  username=#{username}, birthday=#{birthday}, sex=#{sex}, address=#{address} where id=#{id}
+	</update>
+	
+	<select id = "findUserList" parameterType="cn.itcast.mybatis.po.UserQueryVo" resultType="cn.itcast.mybatis.po.UserCustom">
+		 	SELECT * FROM user WHERE user.sex=#{userCustom.sex} AND user.username LIKE '%${userCustom.username}%'
+	</select>
+	
+	<select id = "findUserMap" parameterType="hashMap" resultType="cn.itcast.mybatis.po.UserCustom">
+		 	SELECT * FROM user WHERE user.sex=#{sex} AND user.username LIKE '%${username}%'
+	</select>
+	
+	
+	<select id = "findUserCount"  resultType="int">
+		SELECT COUNT(*) FROM user ;
+	</select>
+	
+	
+	<resultMap type="User" id="userResultMap">
+		<id column="id_" property="id"/>
+		<result column="username_" property="username"/>
+	</resultMap>
+	
+	<select id = "findUserResutMap" parameterType="int" resultMap="userResultMap">
+		select id id_, username username_ from user where id = #{id};
+	</select>
+
+
+	<select id = "findUserListIf" parameterType="cn.itcast.mybatis.po.UserQueryVo" resultType="cn.itcast.mybatis.po.UserCustom">
+		 	SELECT * FROM user 
+		 	<where>
+		 		<include refid="query_user"></include>
+		 	</where>
+	</select>
+	
+	
+</mapper>

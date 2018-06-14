@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="uuid">
+
+	<insert id="insertTestByUUID" parameterType="cn.itcast.mybatis.po.UUID">
+		<selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
+			select UUID()
+		</selectKey>
+		insert into test (id, usrname) values(#{id}, #{usrname})
+	</insert>
+</mapper>
